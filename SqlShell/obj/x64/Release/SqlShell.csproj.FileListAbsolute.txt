@@ -1,0 +1,7 @@
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\bin\x64\Release\SqlShell.exe.config
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\bin\x64\Release\SqlShell.exe
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\bin\x64\Release\SqlShell.pdb
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\obj\x64\Release\SqlShell.csproj.AssemblyReference.cache
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\obj\x64\Release\SqlShell.csproj.CoreCompileInputs.cache
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\obj\x64\Release\SqlShell.exe
+C:\Users\ds_wa\source\repos\SqlShell\SqlShell\obj\x64\Release\SqlShell.pdb
