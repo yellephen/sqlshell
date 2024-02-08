@@ -165,7 +165,7 @@ namespace SqlShell
                     }
                     else if (command.ToLower().StartsWith("testat "))
                     {
-                        command = "EXEC ('select @@version') AT " + command.Substring(7)+";";
+                        command = "EXEC ('select @@version') AT [" + command.Substring(7)+"];";
                         RunQuery(command, sqlConnection);
                     }
                     else if (command.ToLower().StartsWith("enableat "))
