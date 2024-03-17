@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SqlShell</RootNamespace>
     <AssemblyName>sqlshell</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>

